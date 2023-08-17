@@ -1,0 +1,37 @@
+import requests
+import json
+import pytest
+from task_2 import registry
+
+@pytest.fixture
+def auth_token():
+    return registry()
+
+def test_create_and_check_post(auth_token):
+    base_url = 'https://test-stand.gb.ru/api/posts'
+
+    # Создание нового поста
+    new_post_data = {
+        'title': 'New Post Title',
+        'description': 'New Post Description',
+        'content': 'This is the content of the new post.'
+    }
+
+    headers = {
+        'Authorization': f'Bearer {auth_token}',
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.post(base_url, json=new_post_data, headers=headers)
+    assert response.status_code == 201, "Failed to create post"
+
+    # Проверка наличия созданного поста на сервере по полю "описание"
+    response = requests.get(base_url)
+    assert response.status_code == 200, "Failed to get posts"
+    posts = response.json()
+    post_found = False
+    for post in posts:
+        if post['description'] == 'New Post Description':
+            post_found = True
+            break
+    assert post_found, "Created post not found"
