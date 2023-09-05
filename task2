@@ -1,0 +1,36 @@
+import json
+import token
+
+import requests
+import yaml
+
+with open("config.yaml","r") as f:
+    data= yaml.safe_load(f)
+
+
+def registry():
+    headers = {
+        'Content-type': 'application/json'
+    }
+    data = {
+        'name': d['username'],
+        "email": "Develo42@gmail.com"
+        'password': d["password"]
+    }
+    res = requests.post(url=d["url_reg"], data=json.dumps(data),headers=headers)
+    return res.json()["data"]["Token"]
+
+def auth():
+    headers = {
+        'Content-type': 'application/json'
+    }
+    data ={
+        "email": "Develo42@gmail.com"
+        'password': d["password"]
+    }
+    res = requests.post(url=d["url_reg"], headers=headers, data=json.dumps(data))
+    print(res)
+    return res.json()["code"]
+
+if __name__ == '__main__':
+    auth()
