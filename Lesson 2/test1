@@ -1,0 +1,41 @@
+import yaml
+from module import Site
+import time
+
+with open('.testdata.yaml') as f:
+    testdata = yaml.safe_load(f)
+site = Site(testdata['address'])
+login = testdata['login']
+password = testdata['password']
+
+
+def test_step1(sel_1, x_selector2, x_selector3, result, btn_selector):
+    input1 = site.find_element('xpath', sel_1)
+    input1.send_keys('test')
+    input2 = site.find_element('xpath', x_selector2)
+    input2.send_keys('test')
+    btn = site.find_element('css', btn_selector)
+    btn.click()
+    err_label = site.find_element('xpath', x_selector3)
+    res = err_label.text
+    assert res == result
+
+
+def test_step2(sel_1, x_selector2, auth, result2, btn_selector, post_data, expected_post_result):
+    input1 = site.find_element('xpath', sel_1)
+    input1.clear()
+    input1.send_keys('Login')
+    input2 = site.find_element('xpath', x_selector2)
+    input2.clear()
+    input2.send_keys('password')
+    btn = site.find_element('css', btn_selector)
+    btn.click()
+    auth = site.find_element('xpath', auth)
+    res = auth.text
+
+    time.sleep(2)
+    site.create_post(post_data['post_title'], post_data['post_description'], post_data['post_content'])
+    post_existence = site.check_post_existence(post_data['post_title'])
+    site.close()
+    assert res == result2
+    assert post_existence == expected_post_result
