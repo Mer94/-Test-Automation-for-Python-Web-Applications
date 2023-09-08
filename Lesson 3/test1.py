@@ -1,0 +1,61 @@
+import yaml
+from module import Site
+import time
+
+with open('.testdata.yaml') as f:
+    testdata = yaml.safe_load(f)
+site = Site(testdata['address'])
+login = testdata['login']
+password = testdata['password']
+
+
+def test_step1(sel_1, x_selector2, x_selector3, result, btn_selector):
+    input1 = site.find_element('xpath', sel_1)
+    input1.send_keys('test')
+    input2 = site.find_element('xpath', x_selector2)
+    input2.send_keys('test')
+    btn = site.find_element('css', btn_selector)
+    btn.click()
+    err_label = site.find_element('xpath', x_selector3)
+    res = err_label.text
+    assert res == result
+
+
+def test_step2(sel_1, x_selector2, auth, result2, btn_selector, post_data, expected_post_result):
+    input1 = site.find_element('xpath', sel_1)
+    input1.clear()
+    input1.send_keys('Login')
+    input2 = site.find_element('xpath', x_selector2)
+    input2.clear()
+    input2.send_keys('password')
+    btn = site.find_element('css', btn_selector)
+    btn.click()
+    auth = site.find_element('xpath', auth)
+    res = auth.text
+
+    time.sleep(2)
+    site.create_post(post_data['post_title'], post_data['post_description'], post_data['post_content'])
+    post_existence = site.check_post_existence(post_data['post_title'])
+    site.close()
+    assert res == result2
+    assert post_existence == expected_post_result
+
+def test_contact_us_form():
+    # Открыть форму "Contact Us"
+    site.open_contact_us_form()
+
+    # Ввести данные
+    name = testdata['name']
+    email = testdata['email']
+    message = testdata['message']
+    site.enter_contact_us_details(name, email, message)
+
+    # Отправить форму и получить текст из всплывающего alert
+    alert_text = site.submit_contact_us_form()
+
+    # Ожидаемый результат
+    expected_alert_text = "Form successfully submitted"
+
+    # Проверка текста alert на соответствие ожидаемому результату
+    assert alert_text == expected_alert_text
+
