@@ -41,21 +41,18 @@ def test_step2(sel_1, x_selector2, auth, result2, btn_selector, post_data, expec
     assert post_existence == expected_post_result
 
 def test_contact_us_form():
-    # Открыть форму "Contact Us"
     site.open_contact_us_form()
 
-    # Ввести данные
     name = testdata['name']
     email = testdata['email']
     message = testdata['message']
     site.enter_contact_us_details(name, email, message)
 
-    # Отправить форму и получить текст из всплывающего alert
     alert_text = site.submit_contact_us_form()
 
     # Ожидаемый результат
     expected_alert_text = "Form successfully submitted"
 
-    # Проверка текста alert на соответствие ожидаемому результату
+    # Проверка текста alert на ожидаемомы результат.
     assert alert_text == expected_alert_text
 
