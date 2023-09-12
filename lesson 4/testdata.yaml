@@ -1,0 +1,10 @@
+address: https://test-stand.gb.ru
+driver_path: C:\Users\Denis\Desktop\Learning\QA\autotest_web\Lesson2
+sleep_time: 5
+implicitly_wait: 3
+browser: chrome
+login: iloveguineapig222222
+password: 1f517deb7b
+name: Denis
+email: malkindom@gmail.com
+message: Привет, это проверка отправки формы
