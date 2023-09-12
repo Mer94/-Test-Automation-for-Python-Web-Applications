@@ -85,9 +85,3 @@ def test_create_and_check_post(auth_token):
 
     finally:
         site.close()
-
-
-if __name__ == '__main__':
-    auth_token = register_and_get_token()
-    if auth_token:
-        test_create_and_check_post(auth_token)
