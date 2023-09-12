@@ -1,0 +1,93 @@
+import json
+import requests
+import pytest
+import logging
+import time
+
+from module import Site
+
+# Создаем логгер
+logging.basicConfig(filename='test.log', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Данные для API-тестов
+api_base_url = 'https://test-stand.gb.ru/api'
+api_user_data = {
+    'name': 'Denis',
+    'email': 'mer94@inbox.ru',
+    'password': 'parapapa'
+}
+
+# Данные для UI-тестов
+ui_testdata = {
+    'address': 'https://test-stand.gb.ru',
+    'login': 'iloveguineapig222222',
+    'password': '1f517deb7b',
+    'name': 'Denis',
+    'email': 'malkindom@gmail.com',
+    'message': 'Привет, это проверка отправки формы'
+}
+
+
+# Функция для выполнения API-регистрации и получения токена
+def register_and_get_token():
+    headers = {
+        'Content-type': 'application/json'
+    }
+    res = requests.post(url=f'{api_base_url}/register', data=json.dumps(api_user_data), headers=headers)
+    if res.status_code == 201:
+        token = res.json()["data"]["Token"]
+        logger.info(f'Registration successful. Token: {token}')
+        return token
+    else:
+        logger.error(f'Registration failed. Status Code: {res.status_code}, Response: {res.text}')
+        return None
+
+
+@pytest.fixture
+def auth_token():
+    # Вызываем функцию для API-регистрации и получения токена
+    token = register_and_get_token()
+    if token:
+        return token
+    else:
+        pytest.skip('Skipping UI tests due to API registration failure')
+
+
+def test_create_and_check_post(auth_token):
+    # Создаем объект Site для UI-тестов
+    site = Site(ui_testdata['address'])
+
+    try:
+        time.sleep(5)
+
+        site.login(ui_testdata['login'], ui_testdata['password'])
+
+        site.create_post('Privet', 'Ya zdorovayus', 'image')
+
+        time.sleep(5)
+
+        # Проверка наличия созданного поста на сервере по полю "описание"
+        response = requests.get(f'{api_base_url}/posts')
+        assert response.status_code == 200, "Failed to get posts"
+        posts = response.json()
+        post_found = False
+        for post in posts:
+            if post['description'] == 'Ya zdorovayus':
+                post_found = True
+                break
+        assert post_found, "Created post not found"
+        logger.info('UI test completed successfully')
+
+    except Exception as e:
+        logger.error(f'UI test failed: {str(e)}')
+        raise
+
+    finally:
+        site.close()
+
+
+if __name__ == '__main__':
+    auth_token = register_and_get_token()
+    if auth_token:
+        test_create_and_check_post(auth_token)
