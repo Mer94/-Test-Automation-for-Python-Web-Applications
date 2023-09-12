@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 api_base_url = 'https://test-stand.gb.ru/api'
 api_user_data = {
     'name': 'Denis',
-    'email': 'mer94@inbox.ru',
-    'password': 'parapapa'
+    'email': 'malkindom@gmail.com',
+    'password': '1f517deb7b'
 }
 
 # Данные для UI-тестов
