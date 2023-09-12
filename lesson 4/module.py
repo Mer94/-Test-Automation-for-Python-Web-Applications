@@ -82,7 +82,6 @@ class Site:
             )
             return element
         except Exception as e:
-            # Обработка исключения или вывод сообщения о том, что элемент не стал видимым
             pass
     def open_contact_us_form(self):
         open_form_button_locator = '//*[@id="app"]/main/nav/ul/li[2]/a'
@@ -120,3 +119,17 @@ class Site:
         alert.accept()
 
         return alert_text
+
+        def login(self, username, password):
+        username_input_locator = '//*[@id="login"]/div[1]/label/input'
+        password_input_locator = '//*[@id="login"]/div[2]/label/input'
+        login_button_locator = '//*[@id="login"]/div[3]/button/span'
+
+        username_input = self.find_element('xpath', username_input_locator)
+        username_input.send_keys(username)
+
+        password_input = self.find_element('xpath', password_input_locator)
+        password_input.send_keys(password)
+
+        login_button = self.find_element('xpath', login_button_locator)
+        login_button.click()
